@@ -1,8 +1,20 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import Joi from 'joi';
-import User from '../model/userModel';
+import { v1 as uuid } from 'uuid';
+import { uploadData, findData } from '../dynamo';
 import { generateToken } from '../utils';
+
+interface Info {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+}
+
+interface Data {
+  [key: string]: string | Info;
+};
 
 
 export const loginUser = async (email: string, password: string) => {
@@ -18,12 +30,14 @@ export const loginUser = async (email: string, password: string) => {
   });
 
   if (error) return { error: error.details[0].message };
-  const user = await User.findOne({ email });
+
+  const user = await findData('getbits-user', { email }) as { [key: string]: string; };
+
   if (user) {
     if (bcrypt.compareSync(password, user.password)) {
       return {
         data: {
-          _id: user._id,
+          id: user.id,
           name: user.name,
           email: user.email,
           token: generateToken(user)
@@ -32,7 +46,7 @@ export const loginUser = async (email: string, password: string) => {
     } else {
       return { error: 'Invalid password' };
     }
-  }
+  };
 
   return { error: `User with ${email} doesn't exists` };
 
@@ -50,22 +64,24 @@ export const registerUser = async (name: string, email: string, password: string
   const { error } = schema.validate({ name, email, password });
   if (error) return { error: error.details[0].message };
 
-  const user = { name, email, password: bcrypt.hashSync(password, 8) };
+  const user = { id: uuid(), name, email, password: bcrypt.hashSync(password, 8) };
 
   try {
-    const exists = await User.findOne({ email });
+    const exists = await findData('getbits-user', { email });
     if (exists) {
       return { error: "User already exists" };
     }
-    const newUser = new User({ ...user });
-    const createdUser = await newUser.save() as unknown as { [key: string]: string; };
 
+    const response = await uploadData('getbits-user', user) as { [key: string]: string; };
+    if (response.error) {
+      return { error: response.error };
+    }
     return {
       data: {
-        _id: createdUser._id,
-        name: createdUser.name,
-        email: createdUser.email,
-        token: generateToken(createdUser)
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        token: generateToken(user)
       }
     };
   } catch (error: any) {

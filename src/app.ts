@@ -4,8 +4,8 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import { graphqlHTTP } from 'express-graphql';
 import schema from './model/graphql-schema';
-
-
+import dotenv from "dotenv";
+dotenv.config()
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.use('/graphql', graphqlHTTP({
   graphiql: true
 }));
 
-
+app.listen(3000, () => console.log('listening on 3000'));
 
 
 

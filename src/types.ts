@@ -2,7 +2,6 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLID,
-  GraphQLFloat,
   GraphQLList,
 } from 'graphql';
 
@@ -13,7 +12,6 @@ const user = new GraphQLObjectType({
     id: {
       type: GraphQLID,
       description: "The user's unique id",
-      resolve: (source) => source._id
     },
     name: {
       type: GraphQLString,
@@ -53,18 +51,17 @@ const bill = new GraphQLObjectType({
     id: {
       type: GraphQLID,
       description: "The bill's unique id",
-      resolve: (source) => source._id
     },
     userId: {
       type: GraphQLString,
       description: 'The unique id of the user',
     },
-    details: {
+    description: {
       type: GraphQLString,
       description: "The information on the payment",
     },
     amount: {
-      type: GraphQLFloat,
+      type: GraphQLString,
       description: "The recurrent amount being paid",
     }
   })
@@ -79,7 +76,7 @@ export const billType = new GraphQLObjectType({
       description: 'Error message if any',
     },
     data: {
-      type: new GraphQLList(bill) || bill,
+      type: new GraphQLList(bill),
       description: "The details of a user's recurring payment'",
     }
   })

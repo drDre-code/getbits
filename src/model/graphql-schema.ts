@@ -1,4 +1,3 @@
-import Bill from './billsModel';
 import { loginUser, registerUser } from '../controller/userController';
 import { getBills, editBill, uploadBill, deleteBill } from '../controller/billsController';
 import { userType, billType } from '../types';
@@ -7,14 +6,9 @@ import {
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
-  GraphQLList,
   GraphQLID,
-  GraphQLNonNull,
-  GraphQLInt,
-  GraphQLFloat
+  GraphQLNonNull
 } from 'graphql';
-
-
 
 
 
@@ -25,7 +19,7 @@ const query = new GraphQLObjectType({
   fields: () => ({
     signIn: {
       type: userType,
-      description: 'Enter the login details of the user as argument',
+      description: 'Enter the login information of the user as argument',
       args: {
         email: {
           type: new GraphQLNonNull(GraphQLString),
@@ -46,7 +40,7 @@ const query = new GraphQLObjectType({
         if (user.message) {
           return { message: user.message };
         }
-        return getBills(user._id);
+        return getBills(user.id);
       }
     }
   })
@@ -79,12 +73,12 @@ const mutation = new GraphQLObjectType({
       type: billType,
       description: 'creates a todo',
       args: {
-        details: {
+        description: {
           type: new GraphQLNonNull(GraphQLString),
           description: 'The information on the payment',
         },
         amount: {
-          type: new GraphQLNonNull(GraphQLFloat),
+          type: new GraphQLNonNull(GraphQLString),
           description: 'The recurrent amount being paid',
         }
       },
@@ -94,7 +88,8 @@ const mutation = new GraphQLObjectType({
           const message = user.message;
           return { message };
         }
-        return uploadBill(user._id, args.details, args.amount);
+        console.log(user)
+        return uploadBill(user.id, args.description, args.amount);
       }
     },
     editBill: {
@@ -105,12 +100,12 @@ const mutation = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLID),
           description: "The bill's unique id",
         },
-        details: {
+        description: {
           type: GraphQLString,
           description: 'The information on the payment',
         },
         amount: {
-          type: GraphQLFloat,
+          type: GraphQLString,
           description: 'The recurrent amount being paid',
         }
       },
@@ -120,7 +115,7 @@ const mutation = new GraphQLObjectType({
           const message = user.message;
           return { message };
         }
-        return editBill(user._id, args.id, args.details, args.amount);
+        return editBill(user.id, args.id, args.description, args.amount);
       }
     },
     deleteBill: {
@@ -148,9 +143,9 @@ const mutation = new GraphQLObjectType({
       resolve: (_, args, next) => {
         const user = isAuth(next) as unknown as { [key: string]: string; };
         if (user.message) {
-          return {error: user.message};
+          return { error: user.message };
         }
-        return deleteBill(user._id, args.id);
+        return deleteBill(user.id, args.id);
       }
     },
 
