@@ -36,5 +36,5 @@ https://documenter.getpostman.com/view/16998071/UUy1g84o
 or could be by using graphiql
 
 ```
-https://documenter.getpostman.com/view/16998071/UUy1g84o
+http://localhost:3000/graphql
 ```
