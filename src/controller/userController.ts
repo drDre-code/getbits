@@ -1,8 +1,7 @@
-import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import Joi from 'joi';
 import { v1 as uuid } from 'uuid';
-import { uploadData, findData } from '../dynamo';
+import { uploadData, findData } from '../db/dynamo';
 import { generateToken } from '../utils';
 
 interface Info {
@@ -34,9 +33,12 @@ export const loginUser = async (email: string, password: string) => {
   const user = await findData('getbits-user', { email }) as { [key: string]: string; };
 
   if (user) {
+    if (user.error) {
+      return user;
+    }
     if (bcrypt.compareSync(password, user.password)) {
       return {
-        data: {
+        user: {
           id: user.id,
           name: user.name,
           email: user.email,
@@ -67,17 +69,19 @@ export const registerUser = async (name: string, email: string, password: string
   const user = { id: uuid(), name, email, password: bcrypt.hashSync(password, 8) };
 
   try {
-    const exists = await findData('getbits-user', { email });
-    if (exists) {
+    const data = await findData('getbits-user', { email });
+    if (data) {
+      if (data.error) {
+        return data;
+      }
       return { error: "User already exists" };
     }
-
     const response = await uploadData('getbits-user', user) as { [key: string]: string; };
     if (response.error) {
       return { error: response.error };
     }
     return {
-      data: {
+      user: {
         id: user.id,
         name: user.name,
         email: user.email,

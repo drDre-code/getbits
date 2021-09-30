@@ -1,6 +1,6 @@
 import { loginUser, registerUser } from '../controller/userController';
 import { getBills, editBill, uploadBill, deleteBill } from '../controller/billsController';
-import { userType, billType } from '../types';
+import { userType, billType } from './types';
 import { isAuth } from '../utils';
 import {
   GraphQLObjectType,
@@ -88,7 +88,6 @@ const mutation = new GraphQLObjectType({
           const message = user.message;
           return { message };
         }
-        console.log(user)
         return uploadBill(user.id, args.description, args.amount);
       }
     },

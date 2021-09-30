@@ -32,9 +32,6 @@ COPY --from=compilation /tmp/compilation/dist dist
 COPY --from=build /tmp/build/node_modules node_modules
 
 COPY bin bin
-COPY public public
-
-COPY views views
 COPY package.json package.json
 EXPOSE 3000
 

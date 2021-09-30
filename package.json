@@ -7,7 +7,8 @@
     "dev": "yarn tsc && node ./bin/www"
   },
   "dependencies": {
-    "aws-sdk": "~2.996.0",
+    "@humanwhocodes/env": "~2.2.0",
+    "aws-sdk": "~2.997.0",
     "bcryptjs": "~2.4.3",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -17,7 +18,6 @@
     "graphql": "~15.6.0",
     "joi": "~17.4.2",
     "jsonwebtoken": "~8.5.1",
-    "mongoose": "~6.0.8",
     "morgan": "~1.9.1",
     "uuid": "~8.3.2"
   },

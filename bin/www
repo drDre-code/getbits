@@ -3,17 +3,14 @@
 /**
  * Module dependencies.
  */
-require('dotenv').config();
+require('dotenv').config()
 var app = require('../dist/app').default;
 var debug = require('debug')('getbits:server');
 var http = require('http');
-const mongoose = require('mongoose');
+
 /**
  * Get port from environment and store in Express.
  */
-mongoose.connect(process.env.MONGODB_URL)
-  .then(() => console.log('Database Connected'))
-  .catch((error) => console.log(error));
 
 
 var port = normalizePort(process.env.PORT || '3000');

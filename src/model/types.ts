@@ -36,7 +36,7 @@ export const userType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'Error message if any',
     },
-    data: {
+    user: {
       type: user,
       description: "The information on the user",
     },
@@ -75,7 +75,7 @@ export const billType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'Error message if any',
     },
-    data: {
+    bills: {
       type: new GraphQLList(bill),
       description: "The details of a user's recurring payment'",
     }
